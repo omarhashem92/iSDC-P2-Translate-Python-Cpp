@@ -34,9 +34,31 @@ using namespace std;
 */
 vector< vector<float> > normalize(vector< vector <float> > grid) {
 	
-	vector< vector<float> > newGrid;
+	
+	
 
 	// todo - your code here
+	float total = 0.0;
+	int height = grid.size();
+	int width = grid[0].size();
+	vector< vector<float> > newGrid = zeros(height, width);
+
+	for (auto row = 0 ; row < height ; ++row)
+	{
+		for (auto cell = 0 ; cell < width ; ++cell)
+		{
+			total += grid[row][cell];
+		}
+	}
+
+
+	for (auto row = 0 ; row < height ; ++row)
+	{
+		for (auto cell = 0 ; cell < width ; ++cell)
+		{
+			newGrid[row][cell] = grid[row][cell] / total;
+		}
+	}
 
 	return newGrid;
 }
@@ -76,9 +98,38 @@ vector< vector<float> > normalize(vector< vector <float> > grid) {
 */
 vector < vector <float> > blur(vector < vector < float> > grid, float blurring) {
 
-	vector < vector <float> > newGrid;
+	
 	
 	// your code here
+	int height = grid.size();
+	int width = grid[0].size();
+	vector < vector <float> > newGrid = zeros(height, width); 
+	float center_prob = 1.0 - blurring;
+	float corner_prob = blurring / 12.0;
+	float adjacent_prob = blurring / 6.0;
+	float grid_val;
+	int dxy_array[3] = {-1, 0, 1};
+	vector < vector <float> > window {{corner_prob, adjacent_prob, corner_prob},
+									 {adjacent_prob, center_prob, adjacent_prob},
+									 {corner_prob, adjacent_prob, corner_prob}
+	};
+
+
+		
+	for (auto i = 0; i < height; i++){
+		for (int j = 0; j < width; j++) {
+			grid_val = grid[i][j];
+			for (auto dx : dxy_array) {
+				for (auto dy : dxy_array) {
+					float mult = window[dx+1][dy+1];
+					int new_i = (i + dy ) % height;
+					int new_j = (j + dx ) % width;
+					newGrid[new_i][new_j] += mult * grid_val;
+				}
+			}
+		}
+	}
+	
 
 	return normalize(newGrid);
 }
