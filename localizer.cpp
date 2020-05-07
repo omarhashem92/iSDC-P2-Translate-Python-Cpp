@@ -43,6 +43,30 @@ vector< vector <float> > initialize_beliefs(vector< vector <char> > grid) {
 	vector< vector <float> > newGrid;
 
 	// your code here
+	/* python code as reference 
+	    height = len(grid)
+		width = len(grid[0])
+		area = height * width
+		belief_per_cell = 1.0 / area
+		beliefs = []
+		for i in range(height):
+			row = []
+			for j in range(width):
+				row.append(belief_per_cell)
+			beliefs.append(row)
+		return beliefs
+		*/
+	int height = grid.size();
+	int width = grid[0].size();
+	int area = height * width;
+	float belief_per_cell = 1.0 / area;
+	for (int row = 0; row < height; ++row)
+	{
+		for (int col = 0; col < width; ++col)
+		{
+			newGrid[row][col] = belief_per_cell;
+		}
+	}
 	
 	return newGrid;
 }
@@ -92,7 +116,32 @@ vector< vector <float> > move(int dy, int dx,
   vector < vector <float> > newGrid;
 
   // your code here
+  /* python code for reference
+    height = len(beliefs)
+    width = len(beliefs[0])
+    new_G = [[0.0 for i in range(width)] for j in range(height)]
+    for i, row in enumerate(beliefs):
+        for j, cell in enumerate(row):
+            new_i = (i + dy ) % width
+            new_j = (j + dx ) % height
+            # pdb.set_trace()
+            new_G[int(new_i)][int(new_j)] = cell
+    return blur(new_G, blurring)
+	*/
+	int height = beliefs.size();
+	int width = beliefs[0].size();
+	int new_i = 0;
+	int new_j = 0;
 
+	for(int row =0 ; row< height ; ++row)
+    {
+        for(int col = 0 ; col < width ; col++)
+        {
+           new_i = (row + dy + height) % height;
+           new_j = (col + dx + width) % width;               ///////////////////
+           newGrid[new_i][new_j] = beliefs[row][col];
+        }
+    }
   return blur(newGrid, blurring);
 }
 
@@ -143,6 +192,24 @@ vector< vector <float> > sense(char color,
 	vector< vector <float> > newGrid;
 
 	// your code here
+	int height = grid.size();
+	int width  = grid[0].size();
+
+	for (int row = 0; row < height; ++row)
+	{
+		for (int col = 0; col < width; ++col)
+		{
+			newGrid[row][col] = grid[row][col];
+			if(grid[row][col] == color)
+			{
+				newGrid[row][col] *= p_hit;
+			}
+			else
+			{
+				newGrid[row][col] *= p_miss;
+			}
+        }
+    }
 
 	return normalize(newGrid);
 }
